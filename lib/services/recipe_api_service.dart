@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/recipe.dart';
-import '../secrets.dart'; 
 import '../models/recipe_details.dart';
 
 class RecipeApiService {
+
+  final String _apiKey = dotenv.env['SPOONACULAR_API_KEY'] ?? 'API_KEY_NOT_FOUND';
   Future<List<Recipe>> findRecipesByIngredients(List<String> ingredients) async {
     final String ingredientsString = ingredients.join(', ');
     final url = Uri.parse(
-      'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientsString&number=10&ranking=2&apiKey=$spoonacularApiKey'
+      'https://api.spoonacular.com/recipes/findByIngredients?ingredients=$ingredientsString&number=10&ignorePantry=true&ranking=1&apiKey=$_apiKey'
     );
 
     final response = await http.get(url);
@@ -26,7 +28,7 @@ class RecipeApiService {
 
 Future<RecipeDetails> getRecipeDetails(int recipeId) async {
     final url = Uri.parse(
-      'https://api.spoonacular.com/recipes/$recipeId/information?includeNutrition=false&apiKey=$spoonacularApiKey'
+      'https://api.spoonacular.com/recipes/$recipeId/information?includeNutrition=false&apiKey=$_apiKey'
     );
     
     print('Requesting Details URL: $url');
